@@ -2,3 +2,17 @@
   cursor: -webkit-grab;
   cursor: grab;
 }
+
+.panel-title{
+  height: 12px;
+  line-height: 12px;
+  font-size: 15px;
+  color:#fff;
+  text-align: center;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

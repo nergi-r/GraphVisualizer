@@ -1,9 +1,11 @@
 var main = function(){
 
   var graph = new Graph(d3.select("svg"));
+  var randomGraphGenerator = new RandomGraphGenerator();
+  var $textAreaPlaceholder = $(".form-control");
   var isCtrlPressed = false;
 
-  $(".draw").click(function(){
+  function draw(){
     graph.clear();
     // Separate input into lines to process each of them individually
     var graphEdges = $(".form-control").val().split("\n");
@@ -33,7 +35,10 @@ var main = function(){
       graph.addLink(source, destination, weight);
     }
     resetSimulation();
-  
+  }
+
+  $(".draw").click(function(){
+    draw();
   });
 
   $(".directed").click(function(){
@@ -93,30 +98,90 @@ var main = function(){
   }
 
   /*
-    Using jQuery here to create a placeholder-like in textarea
-    because the placeholder does not support new lines.
+    Using jQuery here to create a placeholder-like for textarea
+    because the intial placeholder does not support new lines.
   */
-  var textAreaPlaceholder = $(".form-control");
   var placeholder = "Please insert the graph edges...\n\n"
                   + "Example for weighted graph:\n1 2 5\n2 3 10\n\n"
                   + "Example for unweighted graph:\n1 2\n2 3\n\n"
                   + "Ctrl + click to insert a new node.\n"
                   + "Double click on a node to form a link with another node.";
 
-  textAreaPlaceholder.val(placeholder);
-  textAreaPlaceholder.focus(function(){
+  $textAreaPlaceholder.val(placeholder);
+  $textAreaPlaceholder.focus(function(){
     if($(this).val() === placeholder){
       $(this).val("");
       $(this).css("color", "black");
     }
   });
 
-  textAreaPlaceholder.blur(function(){
+  $textAreaPlaceholder.blur(function(){
     if($(this).val() === ""){
       $(this).val(placeholder);
       $(this).css("color", "gray");
     }
   });
+
+  // Create smooth scroll animation for panel collapse toggling
+  $(".panel-generate-random").click(function() {
+    if($(this).hasClass("panel-closed")){
+      $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+      $(this).removeClass("panel-closed");
+    }
+    else{
+      $(this).addClass("panel-closed");
+    }
+  });
+
+  $(".form-generate-random").submit(function(event){
+    // Reset collapse panel UI
+    $(".collapse").removeClass("in");
+    $(".panel-generate-random").addClass("panel-closed");
+
+    // Get all input data from the form
+    var nodes = +($(".number-of-nodes").val());
+    var edges = +($(".number-of-edges").val());
+    var isWeighted = false;
+    
+    // Default values
+    var minWeight;
+    var maxWeight;
+    if($(".min-weight").val().length > 0){
+      isWeighted = true;
+      minWeight = +($(".min-weight").val());
+      maxWeight = minWeight;
+    }
+    if($(".max-weight").val().length > 0){
+      isWeighted = true;
+      maxWeight = +($(".max-weight").val());
+      if(minWeight === undefined){
+        minWeight = maxWeight;
+      }
+    }
+    // Prevents minWeight to be larger than maxWeight
+    minWeight = Math.min(minWeight, maxWeight);
+
+    // Generate a random graph based on the parameters given
+    var edgeList = randomGraphGenerator.generate(nodes, edges, isWeighted, minWeight, maxWeight);
+
+    /* 
+      Create a string consisting of all the edges to be pasted on the textarea.
+      This creates a consistency to draw only based on the input in textarea
+    */
+    var generatedGraph = "";
+    for(var i=0;i<edgeList.length;i++){
+      var edge = edgeList[i];
+      generatedGraph += edge.source + " " + edge.destination;
+      if(edge.weight !== undefined){
+        generatedGraph += " " + edge.weight;
+      }
+      generatedGraph += "\n";
+    }
+    $textAreaPlaceholder.val(generatedGraph);
+    $textAreaPlaceholder.css("color", "black");
+
+    draw();
+  })
 }
 
 $(document).ready(main);

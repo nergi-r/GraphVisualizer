@@ -23,7 +23,6 @@ function Graph(svg){
       {source: 6, target: 1, weight: 17},
       {source: 7, target: 2, weight: 77},
       {source: 3, target: 7, weight: 43},
-      {source: 0, target: 5, weight: 1},
       {source: 7, target: 5, weight: 62},
       {source: 4, target: 7, weight: 105},
       {source: 7, target: 8, weight: 90},
@@ -54,7 +53,7 @@ function Graph(svg){
   // Initialize force-layout simulation
   var simulation = d3.forceSimulation(graphData.nodes)
       .force("link", d3.forceLink(graphData.links))
-      .force("collide",d3.forceCollide( radius * 2.4 ).iterations(20))
+      .force("collide",d3.forceCollide( radius * 2.5 ).iterations(20))
       .force("charge", d3.forceManyBody().strength(-250))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("x", d3.forceX(0))
@@ -62,11 +61,12 @@ function Graph(svg){
       .on("tick", ticked);
 
   /*
-    Graph is drawn this way:
-    Link
-    Node covers the link
-    Node Label on top of Node
-    NodeOverlay on top of NodeLabel
+    Graph is drawn from bottom to top this way:
+    1. Link
+    2. Node covers the link
+    3. Node Label on top of Node
+    4. NodeOverlay on top of NodeLabel
+
     This is used so that we can click/drag the node
     even when we click on the node label.
     Without NodeOverlay, we will only be able to
@@ -108,7 +108,7 @@ function Graph(svg){
   }
 
   this.addNode = function(node){
-    // Triggered when creating a new single node
+    // Triggered when creating a new single node from ctrl+click
     if(node === undefined){
       node = findUnusedNodeId();
     }
@@ -157,12 +157,14 @@ function Graph(svg){
     addedNewLink = status;
   }
 
+  // Find the Node Object of the given name
   function findNodeObject(name){
     for(var i=0;i<graphData.nodes.length;i++){
       if(graphData.nodes[i].id === name) return graphData.nodes[i];
     }
   }
 
+  // Find the next node that has not been used (when creating a new node)
   function findUnusedNodeId(){
     var len = Object.keys(nodeList).length;
     for(var i=1;i<=len;i++){
@@ -207,9 +209,9 @@ function Graph(svg){
             .on("dblclick", doubleClicked)
             .on("click", clicked)
             .call(d3.drag()
-            .on("start", dragStarted)
-            .on("drag", dragged)
-            .on("end", dragEnded));
+              .on("start", dragStarted)
+              .on("drag", dragged)
+              .on("end", dragEnded));
 
     link = link.data(graphData.links, function(d) { return d.source + d.target; });
     link.exit().remove();
@@ -251,6 +253,7 @@ function Graph(svg){
               .attr("class", "linkPathLabel")
               .text(function(d) { return d.weight;  });
 
+    // Run the simulation
     simulation.nodes(graphData.nodes);
     simulation.force("link").links(graphData.links);
     simulation.alpha(1).restart();
@@ -287,6 +290,7 @@ function Graph(svg){
                   + elementBoundary(d.target.y, height);
     }); 
 
+    // Following link rotation
     linkLabel.attr("transform", function(d,i) {
         if(d.target.x < d.source.x){
           bbox = this.getBBox();
@@ -349,7 +353,8 @@ function Graph(svg){
   function clicked(d) {
     if(isAddingNewLink === true){
       isAddingNewLink = false;
-      // Not adding a link to itself
+
+      // Not gonna add a link to itself
       if(addingLinkFromNode !== d){
         graphData.links.push({
           "source": addingLinkFromNode,

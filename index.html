@@ -3,8 +3,8 @@
 <head>
   <title>Graph Visualizer</title>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
   <link rel="stylesheet" href="style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -17,19 +17,53 @@
       <div>
         <h1>Input:</h1><br>
         <div class="btn-group btn-group-justified">
-          <a href="#" class="active btn btn-primary directed">Directed</a>
-          <a href="#" class="btn btn-primary undirected">Undirected</a>
+          <a href="#" class="active btn btn-primary directed"><b>Directed</b></a>
+          <a href="#" class="btn btn-primary undirected"><b>Undirected</b></a>
         </div>
-        <div class="btn-group btn-group-justified" style="margin-top:20px">
-          <a href="#" class="active btn btn-primary dynamic">Dynamic</a>
-          <a href="#" class="btn btn-primary static">Static</a>
+        <div class="btn-group btn-group-justified" style="margin-top:15px">
+          <a href="#" class="active btn btn-primary dynamic"><b>Dynamic</b></a>
+          <a href="#" class="btn btn-primary static"><b>Static</b></a>
         </div>
       </div>
       <div class="form-group" style="margin-top: 30px">
         <h2>Graph edges:</h2>
-        <textarea class="form-control" rows="12" style="color: gray"></textarea>
+        <textarea class="form-control" rows="12" style="color: gray; resize: none"></textarea>
       </div>
-      <button class="btn btn-block btn-success draw">Draw</button>
+      <button class="btn btn-block btn-success draw" style="margin-top: 20px"><b>Draw</b></button>
+      <div class="panel panel-info" style="margin-top: 15px">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <a data-toggle="collapse" class="panel-generate-random panel-closed" href=".panel-body" style="text-decoration: none">
+              <b>Generate Random Graph</b>
+            </a>
+          </div>
+        </div>
+        <div class="panel-body collapse">
+          <form class="form-generate-random">
+            <div class="row">
+              <div class="col-md-6">
+                <b>Nodes</b>
+                <input type="number" class="form-control number-of-nodes" placeholder="N" min="1" max="100" required="true">
+              </div>
+              <div class="col-md-6">
+                <b>Edges</b>
+                <input type="number" class="form-control number-of-edges" placeholder="E" min="1" max="100" required="true">
+              </div>
+            </div>
+            <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+              <div class="col-md-6">
+                <b>Minimum Weight</b>
+                <input name="min-weight" type="number" class="form-control min-weight" placeholder="Empty for unweighted" min="-10000" max="10000">
+              </div>
+              <div class="col-md-6">
+                <b>Maximum Weight</b>
+                <input name="max-weight" type="number" class="form-control max-weight" placeholder="Empty for unweighted" min="-10000" max="1000">
+              </div>
+            </div>
+            <button class="btn btn-block btn-info"><b>Generate</b></button>
+          </form>
+        </div>
+      </div>
     </div>
     <div class="col-md-8" style="padding-left: 100px">
       <h1>Output:</h1><br>
@@ -38,6 +72,7 @@
   </div>
 
   <script src="graph.js"></script>
+  <script src="random-graph-generator.js"></script>
   <script src="main.js"></script>
 </body>
 
