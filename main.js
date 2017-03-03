@@ -2,13 +2,13 @@ var main = function(){
 
   var graph = new Graph(d3.select("svg"));
   var randomGraphGenerator = new RandomGraphGenerator();
-  var $textAreaPlaceholder = $(".form-control");
+  var $textAreaPlaceholder = $(".input-form");
   var isCtrlPressed = false;
 
   function draw(){
     graph.clear();
     // Separate input into lines to process each of them individually
-    var graphEdges = $(".form-control").val().split("\n");
+    var graphEdges = $textAreaPlaceholder.val().split("\n");
     for(var i=0;i<graphEdges.length;i++){
       if(graphEdges[i].length === 0){
         continue;
@@ -133,7 +133,10 @@ var main = function(){
     }
   });
 
-  $(".form-generate-random").submit(function(event){
+  $(".form-generate-random").submit(function(event) {
+    // Prevent page from reloading
+    event.preventDefault();
+    
     // Reset collapse panel UI
     $(".collapse").removeClass("in");
     $(".panel-generate-random").addClass("panel-closed");
@@ -142,7 +145,7 @@ var main = function(){
     var nodes = +($(".number-of-nodes").val());
     var edges = +($(".number-of-edges").val());
     var isWeighted = false;
-    
+
     // Default values
     var minWeight;
     var maxWeight;
